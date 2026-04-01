@@ -1,0 +1,44 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+strategy:
+  matrix:
+    Python38:
+      PYTHON_VERSION: '3.8'
+    Python39:
+      PYTHON_VERSION: '3.9'
+    Python310:
+      PYTHON_VERSION: '3.10'
+  maxParallel: 3
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(PYTHON_VERSION)'
+    architecture: 'x64'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install prerequisites'
+
+- script: |
+    python manage.py test
+  displayName: 'Run tests'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/TEST-*.xml'
+    testRunTitle: 'Python $(PYTHON_VERSION)'
+  condition: succeededOrFailed()
+
+# ✅ ADD THIS PART ONLY (DO NOT repeat trigger/pool)
+- script: |
+    git config --global user.email "you@example.com"
+    git config --global user.name "your-name"
+    git remote add github https://github.com/your-username/your-repo.git
+    git push https://<YOUR_GITHUB_TOKEN>@github.com/your-username/your-repo.git main
+  displayName: 'Push to GitHub'
