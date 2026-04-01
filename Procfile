@@ -1,0 +1,1 @@
+web: python manage.py migrate --run-syncdb && gunicorn student_management_system.wsgi --workers 4 --bind 0.0.0.0:%PORT%
