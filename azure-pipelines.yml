@@ -1,13 +1,9 @@
-# Python Django
-# Test a Django project on multiple versions of Python.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
-
 trigger:
 - main
 
 pool:
   vmImage: ubuntu-latest
+
 strategy:
   matrix:
     Python38:
@@ -38,3 +34,11 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     testRunTitle: 'Python $(PYTHON_VERSION)'
   condition: succeededOrFailed()
+
+# ✅ ADD THIS PART ONLY (DO NOT repeat trigger/pool)
+- script: |
+    git config --global user.email "you@example.com"
+    git config --global user.name "your-name"
+    git remote add github https://github.com/your-username/your-repo.git
+    git push https://<YOUR_GITHUB_TOKEN>@github.com/your-username/your-repo.git main
+  displayName: 'Push to GitHub'
